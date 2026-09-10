@@ -23,12 +23,12 @@ The mod is fully configurable via an `.ini` file — no recompilation needed for
 
 ## 📋 Requirements
 
-| Requirement | Details |
-|-------------|---------|
-| Game | GTA IV Complete Edition (v1.2.0.30 / v1.0.7.0) |
-| ASI Loader | `dinput8.dll` (or `xlive.dll` replacement) |
-| ScriptHook | ScriptHook 0.5.1 by Aru |
-| OS | Windows or Linux (Wine / Lutris) |
+| Requirement | Details                                        |
+| ----------- | ---------------------------------------------- |
+| Game        | GTA IV Complete Edition (v1.2.0.30 / v1.0.7.0) |
+| ASI Loader  | `dinput8.dll` (or `xlive.dll` replacement)     |
+| ScriptHook  | ScriptHook 0.5.1 by Aru                        |
+| OS          | Windows or Linux (Wine / Lutris)               |
 
 ---
 
@@ -128,6 +128,7 @@ ScreenShake = 1
 ### Configuration Presets
 
 **🔥 Extreme Mode** — maximum chaos:
+
 ```ini
 TriggerMode = 1
 LaunchForce = 65.0
@@ -137,6 +138,7 @@ VehicleUpwardForce = 40.0
 ```
 
 **🌀 Balanced Mode** — fun but not overpowered:
+
 ```ini
 TriggerMode = 1
 LaunchForce = 25.0
@@ -146,6 +148,7 @@ VehicleUpwardForce = 15.0
 ```
 
 **🏃 Sprint Tackle Mode** — run into people like a truck:
+
 ```ini
 TriggerMode = 2
 MinRunningSpeed = 3.0
@@ -205,15 +208,15 @@ The mod is written in a single zero-dependency C++ file (`TruckTackle.cpp`) usin
 
 ### Key Architecture
 
-| Component | Description |
-|-----------|-------------|
-| `NativeContext` | Custom GTA IV native call context (push args → call handler → read result) |
-| `GCCScriptThread` | Manual vtable-based script thread compatible with GCC (replaces MSVC `ScriptThread`) |
-| `GTA::*` namespace | Thin inline wrappers for every GTA IV native used |
-| `LoadConfig()` | Custom INI parser — no CRT file I/O, uses `GetPrivateProfileStringA` (Win32) |
-| `OnTick()` | Main per-frame logic: detects punch/sprint → scans nearby NPCs/vehicles → applies forces |
-| Cooldown system | Fixed-size array-based cooldown tracker prevents repeated triggers on same entity |
-| x87 math helpers | `MySqrt()`, `MySin()`, `MyCos()` — inline assembly FPU instructions, no `libm` |
+| Component          | Description                                                                              |
+| ------------------ | ---------------------------------------------------------------------------------------- |
+| `NativeContext`    | Custom GTA IV native call context (push args → call handler → read result)               |
+| `GCCScriptThread`  | Manual vtable-based script thread compatible with GCC (replaces MSVC `ScriptThread`)     |
+| `GTA::*` namespace | Thin inline wrappers for every GTA IV native used                                        |
+| `LoadConfig()`     | Custom INI parser — no CRT file I/O, uses `GetPrivateProfileStringA` (Win32)             |
+| `OnTick()`         | Main per-frame logic: detects punch/sprint → scans nearby NPCs/vehicles → applies forces |
+| Cooldown system    | Fixed-size array-based cooldown tracker prevents repeated triggers on same entity        |
+| x87 math helpers   | `MySqrt()`, `MySin()`, `MyCos()` — inline assembly FPU instructions, no `libm`           |
 
 ### How the Punch Detection Works
 
@@ -241,6 +244,7 @@ bool isPunchActive = (now - s_LastPunchTime < 450);
 ```
 
 Change `450` (milliseconds) to control how long after a punch the launch window stays open:
+
 - `200` → very tight, must be close when punching
 - `450` → default, good feel
 - `800` → generous window, more forgiving
@@ -255,15 +259,15 @@ bool isLeftClick = (MyGetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0;
 
 Replace `VK_LBUTTON` with any of:
 
-| Constant | Key |
-|----------|-----|
-| `VK_RBUTTON` | Right mouse button |
+| Constant      | Key                 |
+| ------------- | ------------------- |
+| `VK_RBUTTON`  | Right mouse button  |
 | `VK_XBUTTON1` | Mouse side button 1 |
 | `VK_XBUTTON2` | Mouse side button 2 |
-| `'E'` | E key |
-| `VK_SPACE` | Spacebar |
-| `VK_SHIFT` | Shift key |
-| `VK_CONTROL` | Ctrl key |
+| `'E'`         | E key               |
+| `VK_SPACE`    | Spacebar            |
+| `VK_SHIFT`    | Shift key           |
+| `VK_CONTROL`  | Ctrl key            |
 
 ---
 
@@ -274,12 +278,14 @@ Replace `VK_LBUTTON` with any of:
 **Cause:** The compiled `.asi` depends on a DLL that Wine doesn't have.
 
 **Fix:** Always compile with **exactly** this command — no extra libs:
+
 ```bash
 i686-w64-mingw32-g++ -shared -nostdlib -e _DllMain@12 \
   -o TruckTackle.asi TruckTackle.cpp -lkernel32 -O3 -s
 ```
 
 Verify by running:
+
 ```bash
 i686-w64-mingw32-objdump -p TruckTackle.asi | grep "DLL Name:"
 # Must only show: KERNEL32.dll
@@ -307,5 +313,86 @@ This mod is free to use, modify, and redistribute for personal use.
 
 ---
 
-*Built for GTA IV Complete Edition with ScriptHook 0.5.1 by Aru.*
-*Compatible with Linux via Wine/Lutris.*
+_Built for GTA IV Complete Edition with ScriptHook 0.5.1 by Aru._
+_Compatible with Linux via Wine/Lutris._
+
+---
+
+# 💥 BlastPistol — GTA IV ASI Mod
+
+> **Shoot, and they're gone.** BlastPistol transforms the standard pistol into a force-blast weapon — every shot unleashes an invisible shockwave that launches NPCs and vehicles high into the air.
+
+![Platform](https://img.shields.io/badge/Platform-GTA%20IV%20Complete%20Edition-blue)
+![Loader](https://img.shields.io/badge/ASI%20Loader-dinput8.dll-green)
+![ScriptHook](https://img.shields.io/badge/ScriptHook-0.5.1%20Aru-orange)
+![OS](https://img.shields.io/badge/OS-Windows%20%7C%20Linux%20Wine-lightgrey)
+
+---
+
+## 🎮 What Does This Mod Do?
+
+**BlastPistol** adds a **physical impulse (Force Blast)** effect when Niko fires a pistol:
+
+- **Shoot an NPC** → Instantly ragdolls and gets thrown very far away
+- **Shoot a vehicle** → Cars/trucks/bikes get launched violently and tumble mid-air
+- **Area blast** → Nearby NPCs around the hit point are also launched (splash effect)
+- **Force falloff** — Closer targets receive stronger push force
+- **Fully configurable** via `BlastPistol.ini`
+
+---
+
+## 📋 Requirements
+
+| Requirement | Details                          |
+| ----------- | -------------------------------- |
+| Game        | GTA IV Complete Edition          |
+| ASI Loader  | `dinput8.dll`                    |
+| ScriptHook  | ScriptHook 0.5.1 by Aru          |
+| OS          | Windows or Linux (Wine / Lutris) |
+
+---
+
+## 🚀 Installation
+
+1. Copy `BlastPistol.asi` and `BlastPistol.ini` to `GTAIV/` and `GTAIV/plugins/`
+2. Launch the game — mod loads automatically
+
+---
+
+## ⚙️ Quick Configuration (`BlastPistol.ini`)
+
+```ini
+[BLAST_PISTOL]
+WeaponIDs   = 7,9  ; 7=Pistol/Glock, 9=Desert Eagle/Combat Pistol
+BlastRange  = 40.0 ; Target detection distance (meters)
+BlastRadius = 5.0  ; Blast area radius (meters)
+FalloffMin  = 0.35 ; Force at edge of radius (0.0–1.0)
+
+[NPC]
+BaseForce   = 55.0 ; NPC horizontal launch distance
+UpwardForce = 12.0 ; NPC upward launch height
+
+[VEHICLE]
+BaseForce   = 90.0  ; Vehicle horizontal launch distance
+UpwardForce = 22.0  ; Vehicle upward launch height
+SpinMult    = 1.2   ; Mid-air spin intensity
+```
+
+---
+
+## 🔧 Build from Source
+
+```bash
+i686-w64-mingw32-g++ \
+  -shared -nostdlib -e _DllMain@12 \
+  -o BlastPistol.asi BlastPistol.cpp \
+  -lkernel32 -O3 -s
+
+# Verify (must only be KERNEL32.dll):
+i686-w64-mingw32-objdump -p BlastPistol.asi | grep "DLL Name:"
+```
+
+---
+
+_Built for GTA IV Complete Edition with ScriptHook 0.5.1 by Aru._
+_Compatible with Linux via Wine/Lutris._
